@@ -8,6 +8,7 @@ import Features from "@/components/Features";
 import PhotoUpload from "@/components/PhotoUpload";
 import Questionnaire from "@/components/Questionnaire";
 import ResultView from "@/components/ResultView";
+import Toaster from "@/components/Toaster";
 import type { AnalysisResult, Questionnaire as Q } from "@/lib/types";
 
 type Step = "upload" | "questionnaire" | "analyzing" | "result" | "error";
@@ -55,6 +56,8 @@ export default function Home() {
   const showLanding = step === "upload" && !photo;
 
   return (
+    <>
+    <Toaster />
     <main className="max-w-6xl mx-auto px-6 md:px-10 pb-20">
       <Nav onReset={reset} showReset={step !== "upload" || !!photo} />
       <div className="hairline" />
@@ -175,6 +178,7 @@ export default function Home() {
         <p className="label">Powered by GPT-4o</p>
       </footer>
     </main>
+    </>
   );
 }
 

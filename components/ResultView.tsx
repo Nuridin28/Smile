@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import type { AnalysisResult, Swatch } from "@/lib/types";
 import ChatPanel from "./ChatPanel";
+import PaletteSection from "./PaletteSection";
+import SeasonCompare from "./SeasonCompare";
+import { copyHex } from "@/lib/toast";
 
 export default function ResultView({
   result,
@@ -30,14 +33,6 @@ export default function ResultView({
               No. {seasonNumber(result.season)}
             </span>
           </p>
-          <motion.img
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            src={photo}
-            alt=""
-            className="hidden md:block w-28 h-28 rounded-md object-cover mt-8 ring-1 ring-ink-100"
-          />
         </div>
 
         <div className="col-span-12 md:col-span-10">
@@ -75,16 +70,19 @@ export default function ResultView({
         </div>
       </section>
 
-      {/* Palette */}
-      <Section index="01" eyebrow="Палитра" title="Цвета, в которых ты живёшь">
-        <PaletteGrid items={result.palette} />
+      <Section index="01" eyebrow="Палитра" title="Драпировка и цвета">
+        <PaletteSection result={result} photo={photo} />
       </Section>
 
       <Section index="02" eyebrow="Вне регистра" title="Оттенки, которых стоит избегать">
-        <PaletteGrid items={result.avoid} muted />
+        <AvoidGrid items={result.avoid} />
       </Section>
 
-      <Section index="03" eyebrow="Аксессуары" title="Металлы">
+      <Section index="03" eyebrow="Контекст" title="Соседние сезоны">
+        <SeasonCompare season={result.season} />
+      </Section>
+
+      <Section index="04" eyebrow="Аксессуары" title="Металлы">
         <div className="flex flex-wrap gap-x-6 gap-y-3">
           {result.metals.map((m) => (
             <span key={m} className="text-lg text-ink-900">
@@ -95,14 +93,14 @@ export default function ResultView({
         </div>
       </Section>
 
-      <Section index="04" eyebrow="Beauty" title="Макияж">
+      <Section index="05" eyebrow="Beauty" title="Макияж">
         <div className="grid md:grid-cols-2 gap-10">
           <MakeupBlock label="Дневной">{result.makeup.day}</MakeupBlock>
           <MakeupBlock label="Вечерний">{result.makeup.evening}</MakeupBlock>
         </div>
       </Section>
 
-      <Section index="05" eyebrow="Консультация" title="Личный стилист">
+      <Section index="06" eyebrow="Консультация" title="Личный стилист">
         <ChatPanel result={result} />
       </Section>
 
@@ -170,28 +168,31 @@ function MakeupBlock({ label, children }: { label: string; children: React.React
   );
 }
 
-function PaletteGrid({ items, muted = false }: { items: Swatch[]; muted?: boolean }) {
+function AvoidGrid({ items }: { items: Swatch[] }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-8">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-x-4 gap-y-6">
       {items.map((c, i) => (
         <motion.figure
-          key={i}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 + i * 0.04 }}
-          className="group"
+          key={c.hex + i}
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: i * 0.04 }}
         >
           <div
-            className={`aspect-[4/5] rounded-md ring-1 ring-ink-100 transition group-hover:scale-[1.02] ${
-              muted ? "opacity-60" : ""
-            }`}
+            className="aspect-square rounded-md ring-1 ring-ink-100 opacity-50 grayscale-[20%]"
             style={{ background: c.hex }}
           />
-          <figcaption className="mt-3 flex items-baseline justify-between gap-2">
-            <span className="text-sm text-ink-900 truncate first-letter:uppercase" title={c.name}>
+          <figcaption className="mt-2 flex items-baseline justify-between gap-2">
+            <span className="text-xs text-ink-700 truncate first-letter:uppercase" title={c.name}>
               {c.name}
             </span>
-            <span className="label tabular shrink-0">{c.hex.replace("#", "")}</span>
+            <button
+              onClick={() => copyHex(c.hex)}
+              className="label tabular shrink-0 hover:text-accent transition !text-[9px]"
+            >
+              {c.hex.replace("#", "")}
+            </button>
           </figcaption>
         </motion.figure>
       ))}
