@@ -5,6 +5,7 @@ import type { AnalysisResult, Swatch } from "@/lib/types";
 import ChatPanel from "./ChatPanel";
 import PaletteSection from "./PaletteSection";
 import SeasonCompare from "./SeasonCompare";
+import MakeupStudio from "./MakeupStudio";
 import { copyHex } from "@/lib/toast";
 
 export default function ResultView({
@@ -100,7 +101,11 @@ export default function ResultView({
         </div>
       </Section>
 
-      <Section index="06" eyebrow="Консультация" title="Личный стилист">
+      <Section index="06" eyebrow="Try-on" title="Виртуальная примерка">
+        <MakeupStudio result={result} photo={photo} />
+      </Section>
+
+      <Section index="07" eyebrow="Консультация" title="Личный стилист">
         <ChatPanel result={result} />
       </Section>
 
